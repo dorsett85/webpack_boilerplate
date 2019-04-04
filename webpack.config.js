@@ -26,6 +26,11 @@ module.exports = (env, options) => {
     output: {
       publicPath: '/static/'
     },
+    optimization: {
+      splitChunks: {
+        chunks: 'all'
+      }
+    },
     devtool: devMode ? 'inline-source-map' : false,
     devServer: {
       contentBase: path.resolve(__dirname, 'dist')
