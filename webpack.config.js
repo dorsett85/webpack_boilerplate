@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -12,9 +13,10 @@ const getPlugins = (devMode) => {
       title: 'Webpack Boilerplate'
     }),
     new MiniCssExtractPlugin({
-      filename: devMode ? '[name].css' : '[name].[hash].css',
-      chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
-    })
+      filename: devMode ? '[name].css' : '[name].[contenthash].css',
+      chunkFilename: devMode ? '[name].css' : '[name].[contenthash].css',
+    }),
+    new webpack.HashedModuleIdsPlugin()
   ];
   if (!devMode) { plugins.push(new CleanWebpackPlugin()); }
   return plugins;
@@ -24,11 +26,19 @@ module.exports = (env, options) => {
   const devMode = options.mode === 'development';
   return {
     output: {
+      filename: '[name].[contenthash].js',
       publicPath: '/static/'
     },
     optimization: {
+      runtimeChunk: 'single',
       splitChunks: {
-        chunks: 'all'
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all'
+          }
+        }
       }
     },
     devtool: devMode ? 'inline-source-map' : false,
@@ -60,7 +70,7 @@ module.exports = (env, options) => {
               loader: 'css-loader',
               options: {
                 modules: true,
-                localIdentName: '[name]_[hash]',
+                localIdentName: '[name]-[contenthash]',
               }
             },
             'sass-loader'
