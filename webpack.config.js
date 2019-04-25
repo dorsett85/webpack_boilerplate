@@ -71,7 +71,7 @@ module.exports = (env, options) => {
               loader: 'css-loader',
               options: {
                 modules: true,
-                localIdentName: `[name]${hash}`,
+                localIdentName: '[name]-[hash:base64]',
               }
             },
             'sass-loader'
